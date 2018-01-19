@@ -16,6 +16,31 @@
 #include <qt4helpers.h>
 
 namespace qevercloud {
+
+/**
+ * Constructs NoteStore object.
+ * @param noteStoreUrl
+ * EDAM NoteStore service url. In general it's different for different users.
+ * @param authenticationToken
+ *  This token that will be used as the default token.
+ *
+ */
+NoteStore::NoteStore(QString noteStoreUrl, QString authenticationToken, QObject * parent) :
+    QObject(parent)
+{
+    setNoteStoreUrl(noteStoreUrl);
+    setAuthenticationToken(authenticationToken);
+}
+
+/**
+ * Constructs NoteStore object.
+ *
+ * noteStoreUrl and possibly authenticationToken are expected to be specified later.
+ */
+NoteStore::NoteStore(QObject * parent) :
+    QObject(parent)
+{}
+
 QByteArray NoteStore_getSyncState_prepareParams(QString authenticationToken)
 {
     ThriftBinaryBufferWriter w;
@@ -9468,6 +9493,24 @@ QVariant UserStore_checkVersion_readReplyAsync(QByteArray reply)
     return QVariant::fromValue(UserStore_checkVersion_readReply(reply));
 }
 
+/**
+ * @brief Constructs UserStore object.
+ * @param host
+ *   www.evernote.com or sandbox.evernote.com
+ * @param authenticationToken
+ *   This token that will be used as the default token.
+ */
+UserStore::UserStore(QString host, QString authenticationToken, QObject * parent) :
+    QObject(parent)
+{
+    QUrl url;
+    url.setScheme(QStringLiteral("https"));
+    url.setHost(host);
+    url.setPath(QStringLiteral("/edam/user"));
+    m_url = url.toString(QUrl::StripTrailingSlash);
+    setAuthenticationToken(authenticationToken);
+}
+
 bool UserStore::checkVersion(QString clientName, qint16 edamVersionMajor, qint16 edamVersionMinor)
 {
     QByteArray params = UserStore_checkVersion_prepareParams(clientName, edamVersionMajor, edamVersionMinor);
@@ -11040,6 +11083,5 @@ AsyncResult* UserStore::getAccountLimitsAsync(ServiceLevel::type serviceLevel)
     QByteArray params = UserStore_getAccountLimits_prepareParams(serviceLevel);
     return new AsyncResult(m_url, params, UserStore_getAccountLimits_readReplyAsync);
 }
-
 
 } // namespace qevercloud

@@ -48,6 +48,5 @@ SOURCES += AsyncResult.cpp \
            InkNoteImageDownloader.cpp \
            oauth.cpp \
            services.cpp \
-           services_nongenerated.cpp \
            thumbnail.cpp \
            types.cpp \
